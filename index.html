@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -403,22 +404,6 @@
     .project-links{display:flex;gap:8px;margin-top:4px}
     .project-link{font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;padding:5px 14px;border-radius:99px;border:1px solid rgba(0,200,255,0.25);transition:all 0.2s}
     .project-link:hover{background:rgba(0,200,255,0.1);border-color:var(--accent)}
-    /* GUESTBOOK */
-    .guestbook-entries{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;max-height:420px;overflow-y:auto;padding-right:4px}
-    .guestbook-entries::-webkit-scrollbar{width:4px}
-    .guestbook-entries::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-    .gb-entry{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px 20px;animation:fadeUp 0.4s ease both;}
-    .gb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-    .gb-name{font-size:14px;font-weight:700;color:var(--accent)}
-    .gb-time{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace}
-    .gb-msg{font-size:13px;color:var(--muted);line-height:1.6}
-    .gb-emoji{font-size:18px;margin-right:6px}
-    .gb-form{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;margin-top:8px}
-    .gb-form-title{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--text)}
-    .gb-counter{font-size:11px;color:var(--muted);text-align:right;margin-top:4px;font-family:'Space Mono',monospace}
-    .emoji-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-    .emoji-btn{font-size:20px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:4px 8px;cursor:pointer;transition:all 0.15s;}
-    .emoji-btn:hover,.emoji-btn.selected{border-color:var(--accent);background:rgba(0,200,255,0.12);transform:scale(1.15)}
     /* QUICK FACTS */
     .fun-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
     .fun-fact{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer;}
@@ -464,7 +449,6 @@
       <button class="nav-btn" onclick="showPage('about',this)">About</button>
       <button class="nav-btn" onclick="showPage('blog',this)">Blog</button>
       <button class="nav-btn" onclick="showPage('projects',this)">Projects</button>
-      <button class="nav-btn" onclick="showPage('guestbook',this)">Guestbook</button>
     </div>
   </nav>
 
@@ -833,40 +817,6 @@
       </div>
     </div>
 
-    <!-- GUESTBOOK -->
-    <div class="page" id="guestbook">
-      <div class="card">
-        <div class="section-header"><h2>📖 Guestbook</h2><div class="section-line"></div></div>
-        <p style="font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.7">Leave a message! Say hi, drop feedback, or just let me know you were here.</p>
-        <div class="guestbook-entries" id="gb-entries"></div>
-        <div class="gb-form">
-          <div class="gb-form-title">✍️ Sign the Guestbook</div>
-          <div class="form-row">
-            <label class="form-label">Your Name</label>
-            <input class="form-input" type="text" id="gb-name" placeholder="Alex" maxlength="30">
-          </div>
-          <div class="form-row">
-            <label class="form-label">Pick an Emoji</label>
-            <div class="emoji-row">
-              <button class="emoji-btn selected" onclick="selectEmoji(this,'👋')">👋</button>
-              <button class="emoji-btn" onclick="selectEmoji(this,'⛏️')">⛏️</button>
-              <button class="emoji-btn" onclick="selectEmoji(this,'💙')">💙</button>
-              <button class="emoji-btn" onclick="selectEmoji(this,'🔥')">🔥</button>
-              <button class="emoji-btn" onclick="selectEmoji(this,'🌟')">🌟</button>
-              <button class="emoji-btn" onclick="selectEmoji(this,'🤩')">🤩</button>
-              <button class="emoji-btn" onclick="selectEmoji(this,'🎮')">🎮</button>
-              <button class="emoji-btn" onclick="selectEmoji(this,'🧱')">🧱</button>
-            </div>
-          </div>
-          <div class="form-row">
-            <label class="form-label">Message</label>
-            <textarea class="form-textarea" id="gb-msg" placeholder="Hey, love your work!" maxlength="200" oninput="updateCounter(this)"></textarea>
-            <div class="gb-counter" id="gb-counter">0 / 200</div>
-          </div>
-          <button class="form-submit" onclick="submitGuestbook()">Sign Guestbook ✍️</button>
-        </div>
-      </div>
-    </div>
 
     <footer>
       Made with ♥ by <span>ImHungry1480</span> · <span id="footer-egg" onclick="triggerEgg('footer')" style="opacity:0.4;font-size:11px;cursor:pointer">🥚</span>
@@ -954,7 +904,6 @@
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
     if (id === 'about') { setTimeout(() => { document.querySelectorAll('.skill-fill').forEach(b => b.style.width = b.dataset.width+'%'); }, 100); }
-    if (id === 'guestbook') gbRender();
     if (id === 'blog') renderBlogList();
   }
 
@@ -988,7 +937,6 @@
     blog:     { icon:'📝', title:'Blog Reader!',       text:'You double-clicked a blog post! A true lore hunter.', code:'LORE_HUNTER' },
     projects: { icon:'❓', title:'Mystery Unlocked!',  text:"You found the secret project card. Something big IS coming. Watch this space. 👀", code:'PROJECT_OMEGA' },
     fact:     { icon:'🤫', title:'Curious!',           text:"Fine, you got me. The first tool I ever built was a dirt house calculator. It never shipped.", code:'DIRT_HOUSE_GANG' },
-    guestbook:{ icon:'📖', title:'Social Butterfly!',  text:"You signed the guestbook! You're officially part of the crew.", code:'CREW_MEMBER' },
     darkmode: { icon:'🌑', title:'Night Owl!',         text:"You've been browsing in dark mode. Certified night owl detected.", code:'NIGHT_OWL_MODE' },
     idle:     { icon:'💤', title:'Gone AFK?',          text:'You left the page idle too long... the Creeper saw you.', code:'CREEPER_SAW_YOU' },
   };
@@ -1031,62 +979,6 @@
     document.querySelector('#home > div:last-child')?.after(p);
   }, 2000);
 
-  /* GUESTBOOK — localStorage */
-  const GB_KEY = 'imhungry1480_guestbook_v1';
-  function gbLoad() {
-    try { return JSON.parse(localStorage.getItem(GB_KEY)) || []; }
-    catch(e) { return []; }
-  }
-  function gbSave(entries) {
-    try { localStorage.setItem(GB_KEY, JSON.stringify(entries)); } catch(e){}
-  }
-  function gbTimeAgo(ts) {
-    const s = Math.floor((Date.now()-ts)/1000);
-    if(s<60) return 'Just now';
-    if(s<3600) return Math.floor(s/60)+'m ago';
-    if(s<86400) return Math.floor(s/3600)+'h ago';
-    if(s<604800) return Math.floor(s/86400)+'d ago';
-    return Math.floor(s/604800)+'w ago';
-  }
-  function gbRender() {
-    const entries = gbLoad();
-    const list = document.getElementById('gb-entries');
-    list.innerHTML = '';
-    if (!entries.length) {
-      list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px;font-size:13px">No entries yet — be the first! 👋</div>';
-      return;
-    }
-    entries.forEach((e, i) => {
-      const div = document.createElement('div');
-      div.className = 'gb-entry';
-      div.style.animationDelay = (i*0.05)+'s';
-      div.innerHTML = `<div class="gb-header"><span class="gb-name">${e.name}</span><span class="gb-time">${gbTimeAgo(e.ts)}</span></div><div class="gb-msg"><span class="gb-emoji">${e.emoji}</span>${e.msg}</div>`;
-      list.appendChild(div);
-    });
-  }
-  let selectedEmoji = '👋';
-  function selectEmoji(btn, emoji) {
-    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    selectedEmoji = emoji;
-  }
-  function updateCounter(el) {
-    document.getElementById('gb-counter').textContent = el.value.length + ' / 200';
-  }
-  function submitGuestbook() {
-    const name = document.getElementById('gb-name').value.trim();
-    const msg  = document.getElementById('gb-msg').value.trim();
-    if (!name||!msg) { showToast('⚠️ Fill in your name and message'); return; }
-    const entries = gbLoad();
-    entries.unshift({ name:'🔵 '+name, emoji:selectedEmoji, msg, ts:Date.now() });
-    gbSave(entries);
-    gbRender();
-    document.getElementById('gb-name').value = '';
-    document.getElementById('gb-msg').value = '';
-    document.getElementById('gb-counter').textContent = '0 / 200';
-    showToast('✍️ Signed and saved!');
-    if (entries.length >= 3) triggerEgg('guestbook');
-  }
 
   /* BLOG */
   const BLOG_POSTS = [
