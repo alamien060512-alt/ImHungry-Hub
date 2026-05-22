@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>ImHungry1480 Hub</title>
+  <meta name="google-site-verification" content="Wr8u-p_TCznODZebNgYhgJ3-jXNWhxbqV7pWAGbE4RU" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    [data-theme="dark"] {
+      --bg: #010a18;
+      --bg2: #020d20;
+      --surface: rgba(0,180,255,0.05);
+      --surface2: rgba(0,180,255,0.09);
+      --border: rgba(0,180,255,0.12);
+      --border-hover: rgba(0,200,255,0.5);
+      --accent: #00c8ff;
+      --accent2: #0080ff;
+      --accent3: #00ffe0;
+      --text: #e0f4ff;
+      --muted: rgba(180,230,255,0.5);
+      --nav-bg: rgba(1,10,24,0.85);
+      --card-shine: rgba(0,200,255,0.04);
+      --orb1: rgba(0,80,200,0.35);
+      --orb2: rgba(0,200,255,0.18);
+      --orb3: rgba(0,255,220,0.1);
+      --grid-line: rgba(0,180,255,0.04);
+      --shadow: rgba(0,100,200,0.35);
+    }
+    [data-theme="light"] {
+      --bg: #f0f8ff;
+      --bg2: #e0f0ff;
+      --surface: rgba(255,255,255,0.75);
+      --surface2: rgba(255,255,255,0.9);
+      --border: rgba(0,120,220,0.18);
+      --border-hover: rgba(0,150,255,0.5);
+      --accent: #0070d8;
+      --accent2: #00b4ff;
+      --accent3: #00d4c0;
+      --text: #001a3a;
+      --muted: rgba(0,30,80,0.55);
+      --nav-bg: rgba(240,248,255,0.88);
+      --card-shine: rgba(0,120,255,0.03);
+      --orb1: rgba(100,180,255,0.25);
+      --orb2: rgba(0,200,255,0.18);
+      --orb3: rgba(0,220,200,0.15);
+      --grid-line: rgba(0,120,255,0.06);
+      --shadow: rgba(0,80,200,0.1);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.4s, color 0.4s;
+    }
+    .bg-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+    .bg-canvas::before {
+      content:''; position:absolute; width:700px; height:700px; border-radius:50%;
+      background:radial-gradient(circle, var(--orb1) 0%, transparent 70%);
+      top:-200px; left:-200px; animation:drift1 18s ease-in-out infinite;
+    }
+    .bg-canvas::after {
+      content:''; position:absolute; width:500px; height:500px; border-radius:50%;
+      background:radial-gradient(circle, var(--orb2) 0%, transparent 70%);
+      bottom:-100px; right:-100px; animation:drift2 22s ease-in-out infinite;
+    }
+    .bg-orb {
+      position:absolute; width:300px; height:300px; border-radius:50%;
+      background:radial-gradient(circle, var(--orb3) 0%, transparent 70%);
+      top:50%; left:60%; animation:drift3 15s ease-in-out infinite;
+    }
+    .bg-grid {
+      position:absolute; inset:0;
+      background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size:60px 60px;
+    }
+    @keyframes drift1{0%,100%{transform:translate(0,0)}50%{transform:translate(80px,60px)}}
+    @keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-60px,-80px)}}
+    @keyframes drift3{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,50px)}}
+    .particles { position:fixed; inset:0; z-index:0; pointer-events:none; }
+    .particle { position:absolute; border-radius:50%; opacity:0; animation:particle-float linear infinite; }
+    @keyframes particle-float{
+      0%{opacity:0;transform:translateY(0) scale(0)}
+      10%{opacity:0.6} 90%{opacity:0.2}
+      100%{opacity:0;transform:translateY(-120px) scale(1.5)}
+    }
+    #loader {
+      position:fixed; inset:0; z-index:9999; background:var(--bg);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:20px;
+      transition:opacity 0.6s, visibility 0.6s;
+    }
+    #loader.hidden{opacity:0;visibility:hidden}
+    .loader-logo{ font-family:'Space Mono',monospace; font-size:22px; color:var(--accent); letter-spacing:3px; animation:pulse-text 1s ease-in-out infinite alternate; }
+    .loader-bar{width:200px;height:2px;background:rgba(0,180,255,0.15);border-radius:2px;overflow:hidden}
+    .loader-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;animation:load 1.4s ease forwards}
+    .loader-text{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:2px;animation:loader-blink 0.8s step-end infinite}
+    @keyframes pulse-text{from{opacity:0.6}to{opacity:1}}
+    @keyframes load{from{width:0}to{width:100%}}
+    @keyframes loader-blink{0%,100%{opacity:1}50%{opacity:0}}
+    .theme-toggle {
+      position:fixed; bottom:24px; right:24px; z-index:200;
+      width:48px; height:48px; border-radius:50%;
+      background:var(--surface2); border:1px solid var(--border);
+      backdrop-filter:blur(16px);
+      display:flex; align-items:center; justify-content:center;
+      font-size:20px; transition:all 0.3s;
+      box-shadow:0 4px 20px var(--shadow); cursor:pointer;
+    }
+    .theme-toggle:hover{transform:scale(1.12) rotate(15deg); border-color:var(--accent);}
+    .toast {
+      position:fixed; bottom:90px; right:24px; z-index:500;
+      background:var(--surface2); border:1px solid var(--border);
+      backdrop-filter:blur(16px); border-radius:14px;
+      padding:12px 18px; font-size:13px; color:var(--text);
+      opacity:0; transform:translateY(10px);
+      transition:all 0.3s; pointer-events:none;
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+    .navbar{position:sticky;top:0;z-index:100;display:flex;justify-content:center;padding:16px 20px;}
+    .nav-box {
+      background:var(--nav-bg); border:1px solid var(--border);
+      backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+      border-radius:99px; padding:6px 8px;
+      display:flex; gap:4px; flex-wrap:wrap; justify-content:center;
+      animation:slideDown 0.5s ease 0.5s both;
+    }
+    @keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+    .nav-btn {
+      background:none; border:none; color:var(--muted);
+      font-family:'Outfit',sans-serif; font-size:13px; font-weight:500;
+      padding:8px 16px; border-radius:99px; cursor:pointer;
+      transition:all 0.2s; letter-spacing:0.3px; white-space:nowrap;
+    }
+    .nav-btn:hover{color:var(--text);background:var(--surface)}
+    .nav-btn.active{
+      background:linear-gradient(135deg,rgba(0,200,255,0.25),rgba(0,128,255,0.15));
+      color:var(--text); border:1px solid rgba(0,200,255,0.35);
+    }
+    [data-theme="light"] .nav-btn.active{
+      background:linear-gradient(135deg,rgba(0,120,220,0.15),rgba(0,180,255,0.1));
+      border-color:rgba(0,120,220,0.3);
+    }
+    .container{position:relative;z-index:1;width:90%;max-width:960px;margin:0 auto;padding:10px 0 80px}
+    .page{display:none;animation:fadeUp 0.4s ease}
+    .page.active-page{display:block}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .card{
+      background:var(--surface); border:1px solid var(--border);
+      backdrop-filter:blur(20px); border-radius:24px; padding:32px;
+      margin-bottom:18px; position:relative; overflow:hidden;
+      transition:border-color 0.3s,box-shadow 0.3s,background 0.4s;
+    }
+    .card::before{
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg,var(--card-shine) 0%,transparent 60%);
+      pointer-events:none;
+    }
+    .card:hover{box-shadow:0 0 40px var(--shadow)}
+    .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    .section-header h2{font-size:22px;font-weight:700}
+    .section-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+    .hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:52px 32px;gap:0}
+    .avatar-ring{
+      width:134px;height:134px;border-radius:50%;
+      background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));
+      padding:3px;margin-bottom:22px;
+      animation:spin-slow 8s linear infinite; position:relative; cursor:pointer;
+    }
+    .avatar-ring::after{
+      content:'';position:absolute;inset:-6px;border-radius:50%;
+      background:conic-gradient(var(--accent),var(--accent2),var(--accent3),var(--accent));
+      opacity:0.3;filter:blur(8px);animation:spin-slow 6s linear infinite reverse;
+    }
+    @keyframes spin-slow{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
+    .avatar-inner{width:100%;height:100%;border-radius:50%;overflow:hidden;border:3px solid var(--bg);position:relative;z-index:1;transition:border-color 0.4s}
+    .avatar-inner img{width:100%;height:100%;object-fit:cover;display:block}
+    .hero h1{
+      font-size:44px;font-weight:800;letter-spacing:-1.5px;line-height:1.1;
+      background:linear-gradient(135deg,var(--text) 30%,var(--accent) 100%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      margin-bottom:10px;animation:heroIn 0.7s ease 0.6s both;
+    }
+    .hero-sub{color:var(--muted);font-size:15px;margin-bottom:22px;letter-spacing:0.3px;animation:heroIn 0.7s ease 0.75s both}
+    @keyframes heroIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .typed-cursor{color:var(--accent);animation:blink 1s step-end infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    .badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:28px;animation:heroIn 0.7s ease 0.9s both}
+    .badge{font-size:12px;padding:5px 14px;border-radius:99px;font-weight:600;letter-spacing:0.3px}
+    .badge-purple{background:rgba(0,200,255,0.12);border:1px solid rgba(0,200,255,0.3);color:#7de8ff}
+    .badge-teal{background:rgba(0,128,255,0.12);border:1px solid rgba(0,128,255,0.3);color:#60b4ff}
+    .badge-pink{background:rgba(0,255,220,0.10);border:1px solid rgba(0,255,220,0.25);color:#4ffde8}
+    [data-theme="light"] .badge-purple{background:rgba(0,100,200,0.1);color:#005fcc}
+    [data-theme="light"] .badge-teal{background:rgba(0,150,255,0.1);color:#0072cc}
+    [data-theme="light"] .badge-pink{background:rgba(0,180,160,0.1);color:#00897b}
+    .hero-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;animation:heroIn 0.7s ease 1.05s both}
+    .btn-primary{
+      background:linear-gradient(135deg,var(--accent),#0050d0);
+      color:white;border:none;padding:11px 26px;border-radius:99px;
+      font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;
+      transition:all 0.25s;text-decoration:none;display:inline-block;
+    }
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,200,255,0.4)}
+    .btn-outline{
+      background:transparent;color:var(--text);border:1px solid var(--border);
+      padding:11px 26px;border-radius:99px;font-family:'Outfit',sans-serif;
+      font-size:14px;font-weight:600;cursor:pointer;transition:all 0.25s;
+      text-decoration:none;display:inline-block;
+    }
+    .btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+    .stat-card{
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:18px;padding:20px;text-align:center;
+      transition:all 0.3s;position:relative;overflow:hidden;cursor:pointer;
+    }
+    .stat-card::before{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(circle at 50% 0%,rgba(0,200,255,0.08),transparent 70%);
+      opacity:0;transition:opacity 0.3s;
+    }
+    .stat-card:hover{border-color:var(--border-hover);transform:translateY(-4px);box-shadow:0 12px 30px var(--shadow)}
+    .stat-card:hover::before{opacity:1}
+    .stat-num{
+      font-size:28px;font-weight:800;font-family:'Space Mono',monospace;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .stat-label{font-size:11px;color:var(--muted);margin-top:4px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase}
+    .activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .dot-green{background:#86efac;box-shadow:0 0 8px rgba(134,239,172,0.7);animation:dot-pulse 2s ease-in-out infinite}
+    .dot-purple{background:var(--accent);box-shadow:0 0 8px rgba(0,200,255,0.7)}
+    .dot-teal{background:var(--accent2);box-shadow:0 0 8px rgba(0,128,255,0.7)}
+    @keyframes dot-pulse{0%,100%{box-shadow:0 0 8px rgba(134,239,172,0.7)}50%{box-shadow:0 0 16px rgba(134,239,172,1)}}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+    .tool-card{
+      background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px;
+      text-decoration:none;color:var(--text);transition:all 0.25s;
+      display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;
+    }
+    .tool-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,200,255,0.06) 0%,transparent 60%);opacity:0;transition:opacity 0.25s;}
+    .tool-card:hover{transform:translateY(-6px);border-color:var(--border-hover);box-shadow:0 16px 40px var(--shadow)}
+    .tool-card:hover::after{opacity:1}
+    .tool-icon{font-size:28px;line-height:1}
+    .tool-top{display:flex;align-items:flex-start;justify-content:space-between}
+    .tool-card h3{font-size:16px;font-weight:700;margin-bottom:4px}
+    .tool-card p{font-size:13px;color:var(--muted);line-height:1.6;flex:1}
+    .tag-new{font-size:10px;padding:3px 10px;border-radius:99px;font-weight:700;background:rgba(80,220,130,0.18);border:1px solid rgba(80,220,130,0.35);color:#86efac;letter-spacing:0.5px}
+    .tool-arrow{font-size:18px;color:var(--muted);transition:transform 0.2s,color 0.2s;align-self:flex-end}
+    .tool-card:hover .tool-arrow{transform:translate(3px,-3px);color:var(--accent)}
+    .link-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px 24px;text-decoration:none;color:var(--text);transition:all 0.25s;display:flex;align-items:center;gap:16px;}
+    .link-card:hover{border-color:var(--border-hover);transform:translateY(-3px);box-shadow:0 10px 28px var(--shadow)}
+    .link-icon{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,rgba(0,200,255,0.2),rgba(0,128,255,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+    .link-info{flex:1}
+    .link-info h3{font-size:16px;font-weight:700;margin-bottom:3px}
+    .link-info p{font-size:13px;color:var(--muted)}
+    .link-arrow{color:var(--muted);font-size:18px;transition:transform 0.2s}
+    .link-card:hover .link-arrow{transform:translateX(4px);color:var(--accent)}
+    .roadmap-list{display:flex;flex-direction:column;gap:0}
+    .roadmap-item{display:flex;gap:20px;padding-bottom:28px;position:relative;}
+    .roadmap-item:last-child{padding-bottom:0}
+    .roadmap-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+    .roadmap-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);background:var(--bg);flex-shrink:0;margin-top:4px;transition:all 0.3s;}
+    .roadmap-dot.done{background:var(--accent3);border-color:var(--accent3);box-shadow:0 0 10px rgba(0,255,220,0.5)}
+    .roadmap-dot.active{background:var(--accent);border-color:var(--accent);box-shadow:0 0 10px rgba(0,200,255,0.6);animation:dot-pulse2 1.5s ease-in-out infinite}
+    @keyframes dot-pulse2{0%,100%{box-shadow:0 0 10px rgba(0,200,255,0.6)}50%{box-shadow:0 0 20px rgba(0,200,255,1)}}
+    .roadmap-line{flex:1;width:2px;background:var(--border);margin-top:4px}
+    .roadmap-item:last-child .roadmap-line{display:none}
+    .roadmap-body{flex:1;padding-top:0}
+    .roadmap-title{font-size:15px;font-weight:700;margin-bottom:4px}
+    .roadmap-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:8px}
+    .roadmap-status{font-size:11px;padding:3px 12px;border-radius:99px;font-weight:700;display:inline-block;}
+    .status-done{background:rgba(0,255,220,0.12);border:1px solid rgba(0,255,220,0.3);color:#00ffe0}
+    .status-wip{background:rgba(0,200,255,0.12);border:1px solid rgba(0,200,255,0.3);color:#7de8ff}
+    .status-planned{background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--muted)}
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+    .gallery-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:all 0.3s;position:relative;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;}
+    .gallery-card:hover{transform:translateY(-5px) scale(1.02);border-color:var(--border-hover);box-shadow:0 16px 40px var(--shadow)}
+    .gallery-inner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;text-align:center;}
+    .gallery-icon{font-size:36px;line-height:1}
+    .gallery-name{font-size:13px;font-weight:700}
+    .gallery-tag{font-size:11px;color:var(--muted)}
+    .gallery-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.25s;backdrop-filter:blur(4px);border-radius:18px;}
+    .gallery-card:hover .gallery-overlay{opacity:1}
+    .gallery-overlay span{background:var(--accent);color:white;padding:8px 20px;border-radius:99px;font-size:13px;font-weight:700;}
+    .gc-1{background:linear-gradient(135deg,rgba(0,200,255,0.15),rgba(0,128,255,0.08))}
+    .gc-2{background:linear-gradient(135deg,rgba(0,128,255,0.15),rgba(0,200,255,0.08))}
+    .gc-3{background:linear-gradient(135deg,rgba(0,255,220,0.12),rgba(0,180,255,0.08))}
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+    .contact-item{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;transition:all 0.25s;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:10px;}
+    .contact-item:hover{border-color:var(--border-hover);transform:translateY(-3px);box-shadow:0 10px 28px var(--shadow)}
+    .contact-icon{font-size:26px}
+    .contact-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'Space Mono',monospace}
+    .contact-value{font-size:14px;font-weight:700}
+    .contact-note{font-size:12px;color:var(--muted);line-height:1.5}
+    .contact-form{margin-top:18px}
+    .form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+    .form-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.8px}
+    .form-input,.form-textarea{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;width:100%;resize:none;}
+    .form-input:focus,.form-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,200,255,0.12)}
+    .form-textarea{height:100px}
+    .form-submit{background:linear-gradient(135deg,var(--accent),#0050d0);color:white;border:none;padding:12px 28px;border-radius:99px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.25s;}
+    .form-submit:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,200,255,0.4)}
+    .changelog-list{display:flex;flex-direction:column;gap:14px}
+    .changelog-item{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 22px;display:flex;gap:16px;align-items:flex-start;transition:all 0.25s;animation:fadeUp 0.4s ease both;}
+    .changelog-item:hover{border-color:var(--border-hover);transform:translateX(4px)}
+    .changelog-version{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;padding-top:2px;min-width:48px;}
+    .changelog-body{flex:1}
+    .changelog-title{font-size:15px;font-weight:700;margin-bottom:6px}
+    .changelog-desc{font-size:13px;color:var(--muted);line-height:1.6}
+    .changelog-date{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:8px}
+    .changelog-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .ctag{font-size:10px;padding:2px 10px;border-radius:99px;font-weight:600}
+    .ctag-add{background:rgba(80,220,130,0.15);border:1px solid rgba(80,220,130,0.3);color:#86efac}
+    .ctag-fix{background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.3);color:#fde68a}
+    .ctag-update{background:rgba(0,200,255,0.12);border:1px solid rgba(0,200,255,0.3);color:#7de8ff}
+    .ctag-new{background:rgba(0,128,255,0.12);border:1px solid rgba(0,128,255,0.3);color:#60b4ff}
+    .faq-list{display:flex;flex-direction:column;gap:10px}
+    .faq-item{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color 0.25s;cursor:pointer;}
+    .faq-item.open{border-color:rgba(0,200,255,0.35)}
+    .faq-q{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;font-size:14px;font-weight:600;transition:color 0.2s;user-select:none}
+    .faq-q:hover{color:var(--accent)}
+    .faq-icon{font-size:20px;color:var(--muted);transition:transform 0.3s,color 0.2s;font-weight:300;flex-shrink:0}
+    .faq-item.open .faq-icon{transform:rotate(45deg);color:var(--accent)}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.25s ease;font-size:13px;color:var(--muted);line-height:1.7;padding:0 20px}
+    .faq-item.open .faq-a{max-height:200px;padding:0 20px 18px}
+    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+    .about-item{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;transition:all 0.25s}
+    .about-item:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+    .about-item-title{font-size:11px;color:var(--accent);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;font-family:'Space Mono',monospace}
+    .about-item p{font-size:13px;color:var(--muted);line-height:1.6}
+    .skill-list{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+    .skill-top{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px}
+    .skill-name{font-weight:600}
+    .skill-pct{color:var(--muted);font-family:'Space Mono',monospace;font-size:12px}
+    .skill-bar{height:4px;background:rgba(0,150,255,0.12);border-radius:4px;overflow:hidden}
+    .skill-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:width 1.2s ease}
+    #egg-modal{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;}
+    #egg-modal.show{display:flex;animation:fadeUp 0.3s ease}
+    .egg-box{background:var(--bg2);border:1px solid var(--accent);border-radius:24px;padding:40px;max-width:360px;width:90%;text-align:center;position:relative;box-shadow:0 0 60px rgba(0,200,255,0.25);animation:eggBounce 0.5s cubic-bezier(0.175,0.885,0.32,1.275);}
+    @keyframes eggBounce{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+    .egg-close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;transition:color 0.2s}
+    .egg-close:hover{color:var(--text)}
+    .egg-icon{font-size:52px;margin-bottom:16px;animation:spin-slow 4s linear infinite}
+    .egg-title{font-size:22px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .egg-text{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px}
+    .egg-code{background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.3);border-radius:10px;padding:10px 16px;font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);margin-bottom:20px;letter-spacing:1px;}
+    #konami-progress{display:flex;gap:6px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}
+    .kp{width:28px;height:28px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all 0.2s;}
+    .kp.lit{background:rgba(0,200,255,0.2);border-color:var(--accent);color:var(--accent)}
+    footer{text-align:center;color:var(--muted);font-size:13px;padding-bottom:30px;position:relative;z-index:1}
+    footer span{color:var(--accent)}
+    .ripple{position:fixed;border-radius:50%;background:rgba(0,200,255,0.1);pointer-events:none;z-index:9997;transform:scale(0);animation:ripple-out 0.6s ease forwards;}
+    @keyframes ripple-out{to{transform:scale(1);opacity:0}}
+    @media(max-width:700px){
+      .hero h1{font-size:30px}
+      .stats-row{grid-template-columns:repeat(2,1fr);gap:10px}
+      .stat-num{font-size:22px}
+      .about-grid,.contact-grid{grid-template-columns:1fr}
+      .nav-btn{padding:7px 12px;font-size:12px}
+      .card{padding:22px 18px}
+    }
+    /* BLOG */
+    .blog-list{display:flex;flex-direction:column;gap:16px}
+    .blog-post{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px 28px;transition:all 0.25s;cursor:pointer;}
+    .blog-post:hover{border-color:var(--border-hover);transform:translateY(-3px);box-shadow:0 12px 32px var(--shadow)}
+    .blog-meta{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+    .blog-date{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace}
+    .blog-tag{font-size:10px;padding:2px 10px;border-radius:99px;font-weight:700;background:rgba(0,200,255,0.12);border:1px solid rgba(0,200,255,0.25);color:var(--accent)}
+    .blog-title{font-size:18px;font-weight:800;margin-bottom:8px;line-height:1.3}
+    .blog-excerpt{font-size:13px;color:var(--muted);line-height:1.7}
+    .blog-readmore{display:inline-block;margin-top:12px;font-size:12px;font-weight:700;color:var(--accent);letter-spacing:0.5px;}
+    .blog-back-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:8px 18px;border-radius:99px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-bottom:14px;display:inline-block;}
+    .blog-back-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .blog-full-body{font-size:15px;color:var(--muted);line-height:1.9}
+    .blog-full-body h3{font-size:17px;font-weight:700;color:var(--text);margin:22px 0 8px}
+    .blog-full-body p{margin-bottom:14px}
+    .blog-full-body code{background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.2);border-radius:6px;padding:2px 8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--accent);}
+    .blog-full-body ul{padding-left:20px;margin-bottom:14px}
+    .blog-full-body li{margin-bottom:6px}
+    /* PROJECTS */
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+    .project-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;transition:all 0.28s;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;}
+    .project-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity 0.3s;}
+    .project-card:hover{border-color:var(--border-hover);transform:translateY(-5px);box-shadow:0 16px 40px var(--shadow)}
+    .project-card:hover::before{opacity:1}
+    .project-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .project-icon{font-size:32px;line-height:1}
+    .project-status{font-size:10px;padding:3px 10px;border-radius:99px;font-weight:700}
+    .ps-active{background:rgba(0,255,150,0.12);border:1px solid rgba(0,255,150,0.3);color:#86efac}
+    .ps-wip{background:rgba(0,200,255,0.12);border:1px solid rgba(0,200,255,0.3);color:var(--accent)}
+    .ps-planned{background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--muted)}
+    .project-name{font-size:16px;font-weight:800;margin-bottom:4px}
+    .project-desc{font-size:13px;color:var(--muted);line-height:1.6;flex:1}
+    .project-lang{display:flex;gap:6px;flex-wrap:wrap}
+    .lang-tag{font-size:10px;padding:2px 9px;border-radius:99px;background:rgba(0,128,255,0.1);border:1px solid rgba(0,128,255,0.2);color:var(--accent2);font-weight:600}
+    .project-links{display:flex;gap:8px;margin-top:4px}
+    .project-link{font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;padding:5px 14px;border-radius:99px;border:1px solid rgba(0,200,255,0.25);transition:all 0.2s}
+    .project-link:hover{background:rgba(0,200,255,0.1);border-color:var(--accent)}
+    /* GUESTBOOK */
+    .guestbook-entries{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;max-height:420px;overflow-y:auto;padding-right:4px}
+    .guestbook-entries::-webkit-scrollbar{width:4px}
+    .guestbook-entries::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+    .gb-entry{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px 20px;animation:fadeUp 0.4s ease both;}
+    .gb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .gb-name{font-size:14px;font-weight:700;color:var(--accent)}
+    .gb-time{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace}
+    .gb-msg{font-size:13px;color:var(--muted);line-height:1.6}
+    .gb-emoji{font-size:18px;margin-right:6px}
+    .gb-form{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;margin-top:8px}
+    .gb-form-title{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--text)}
+    .gb-counter{font-size:11px;color:var(--muted);text-align:right;margin-top:4px;font-family:'Space Mono',monospace}
+    .emoji-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+    .emoji-btn{font-size:20px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:4px 8px;cursor:pointer;transition:all 0.15s;}
+    .emoji-btn:hover,.emoji-btn.selected{border-color:var(--accent);background:rgba(0,200,255,0.12);transform:scale(1.15)}
+    /* QUICK FACTS */
+    .fun-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+    .fun-fact{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer;}
+    .fun-fact strong{color:var(--accent);display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-family:'Space Mono',monospace}
+    @media(max-width:700px){.fun-facts{grid-template-columns:1fr}.projects-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+  <div id="loader">
+    <div class="loader-logo">IMHUNGRY1480</div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+    <div class="loader-text">LOADING_</div>
+  </div>
+
+  <div class="bg-canvas"><div class="bg-grid"></div><div class="bg-orb"></div></div>
+  <div class="particles" id="particles"></div>
+
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+  <div class="toast" id="toast"></div>
+
+  <div id="egg-modal">
+    <div class="egg-box">
+      <button class="egg-close" onclick="closeEgg()">×</button>
+      <div class="egg-icon" id="egg-icon">🥚</div>
+      <div class="egg-title" id="egg-title">Easter Egg!</div>
+      <div class="egg-text" id="egg-text">You found a secret!</div>
+      <div class="egg-code" id="egg-code"></div>
+      <button class="btn-primary" onclick="closeEgg()">Awesome!</button>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="nav-box">
+      <button class="nav-btn active" onclick="showPage('home',this)">Home</button>
+      <button class="nav-btn" onclick="showPage('tools',this)">Tools</button>
+      <button class="nav-btn" onclick="showPage('links',this)">Links</button>
+      <button class="nav-btn" onclick="showPage('roadmap',this)">Roadmap</button>
+      <button class="nav-btn" onclick="showPage('gallery',this)">Gallery</button>
+      <button class="nav-btn" onclick="showPage('changelog',this)">Changelog</button>
+      <button class="nav-btn" onclick="showPage('faq',this)">FAQ</button>
+      <button class="nav-btn" onclick="showPage('contact',this)">Contact</button>
+      <button class="nav-btn" onclick="showPage('about',this)">About</button>
+      <button class="nav-btn" onclick="showPage('blog',this)">Blog</button>
+      <button class="nav-btn" onclick="showPage('projects',this)">Projects</button>
+      <button class="nav-btn" onclick="showPage('guestbook',this)">Guestbook</button>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- HOME -->
+    <div class="page active-page" id="home">
+      <div class="card hero">
+        <div class="avatar-ring">
+          <div class="avatar-inner">
+            <img src="https://media.forgecdn.net/avatars/1766/290/639122775603072785.png" alt="ImHungry1480">
+          </div>
+        </div>
+        <h1>ImHungry1480</h1>
+        <p class="hero-sub"><span id="typed-text"></span><span class="typed-cursor">|</span></p>
+        <div class="badges">
+          <span class="badge badge-purple">⛏ Minecraft Creator</span>
+          <span class="badge badge-teal">🧩 Addon Developer</span>
+          <span class="badge badge-pink">🛠 Tool Maker</span>
+        </div>
+        <div class="hero-btns">
+          <button class="btn-primary" onclick="showPage('tools',document.querySelectorAll('.nav-btn')[1])">View Tools</button>
+          <a class="btn-outline" href="https://github.com/alamien060512-alt" target="_blank">GitHub ↗</a>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card" ondblclick="triggerEgg('stats')">
+          <div class="stat-num" data-count="3">0</div>
+          <div class="stat-label">Tools Built</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" data-count="2">0</div>
+          <div class="stat-label">Platforms</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">15+</div>
+          <div class="stat-label">Commits</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">In Progress</div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:8px">
+        <span style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:1px">↑↑↓↓ ... 🎮</span>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="section-header"><h2>⚡ Quick Facts</h2><div class="section-line"></div></div>
+        <div class="fun-facts">
+          <div class="fun-fact"><strong>Favourite Block</strong>Smooth Basalt — clean, dark, and underrated.</div>
+          <div class="fun-fact"><strong>Daily Driver</strong>VS Code + a lot of console.log debugging.</div>
+          <div class="fun-fact"><strong>Biggest W</strong>Shipping Bedrock Launcher with zero crashes on launch day.</div>
+          <div class="fun-fact" onclick="triggerEgg('fact')"><strong>Secret</strong>Click here if you dare… 🤫</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOOLS -->
+    <div class="page" id="tools">
+      <div class="card">
+        <div class="section-header"><h2>🛠 Tools</h2><div class="section-line"></div></div>
+        <div class="grid">
+          <a class="tool-card" href="https://github.com/alamien060512-alt/MC-Bedrock-Launcher" target="_blank">
+            <div class="tool-top"><div class="tool-icon">🚀</div><span class="tag-new">NEW</span></div>
+            <div><h3>Bedrock Launcher</h3><p>Import/Export worlds and import addons easily on MCPE Android.</p></div>
+            <div class="tool-arrow">↗</div>
+          </a>
+          <a class="tool-card" href="https://alamien060512-alt.github.io/BedrockAddonStudio/" target="_blank">
+            <div class="tool-top"><div class="tool-icon">⚗️</div><span class="tag-new">NEW</span></div>
+            <div><h3>Addon Studio</h3><p>Build behavior packs, resource packs, and more — right in your browser.</p></div>
+            <div class="tool-arrow">↗</div>
+          </a>
+          <a class="tool-card" href="https://alamien060512-alt.github.io/Bedrock-World-Analyzer/" target="_blank">
+            <div class="tool-top"><div class="tool-icon">🌍</div><span class="tag-new">NEW</span></div>
+            <div><h3>World Analyzer</h3><p>Inspect Bedrock world files. View NBT data, seed, player position and more.</p></div>
+            <div class="tool-arrow">↗</div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINKS -->
+    <div class="page" id="links">
+      <div class="card">
+        <div class="section-header"><h2>🌐 Links</h2><div class="section-line"></div></div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <a class="link-card" href="https://github.com/alamien060512-alt" target="_blank">
+            <div class="link-icon">🐙</div>
+            <div class="link-info"><h3>GitHub</h3><p>Open-source projects and repositories</p></div>
+            <div class="link-arrow">→</div>
+          </a>
+          <a class="link-card" href="https://modrinth.com/user/al.amien060512" target="_blank">
+            <div class="link-icon">🟩</div>
+            <div class="link-info"><h3>Modrinth</h3><p>Mods and published projects</p></div>
+            <div class="link-arrow">→</div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROADMAP -->
+    <div class="page" id="roadmap">
+      <div class="card">
+        <div class="section-header"><h2>🗺 Roadmap</h2><div class="section-line"></div></div>
+        <div class="roadmap-list">
+          <div class="roadmap-item">
+            <div class="roadmap-left"><div class="roadmap-dot done"></div><div class="roadmap-line"></div></div>
+            <div class="roadmap-body">
+              <div class="roadmap-title">Bedrock Launcher v1.0</div>
+              <div class="roadmap-desc">Initial release with world import/export and addon management for Android.</div>
+              <span class="roadmap-status status-done">✓ Done</span>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-left"><div class="roadmap-dot done"></div><div class="roadmap-line"></div></div>
+            <div class="roadmap-body">
+              <div class="roadmap-title">Addon Studio — Browser Editor</div>
+              <div class="roadmap-desc">Web-based behavior pack and resource pack creator with live JSON editing.</div>
+              <span class="roadmap-status status-done">✓ Done</span>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-left"><div class="roadmap-dot done"></div><div class="roadmap-line"></div></div>
+            <div class="roadmap-body">
+              <div class="roadmap-title">World Analyzer v2.0</div>
+              <div class="roadmap-desc">Full NBT tree editor with write support. Edit world data directly in-browser.</div>
+              <span class="roadmap-status status-done">✓ Done</span>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-left"><div class="roadmap-dot"></div><div class="roadmap-line"></div></div>
+            <div class="roadmap-body">
+              <div class="roadmap-title">Skin Editor</div>
+              <div class="roadmap-desc">Browser-based Minecraft skin creator with live 3D preview and export.</div>
+              <span class="roadmap-status status-planned">Planned</span>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-left"><div class="roadmap-dot"></div><div class="roadmap-line"></div></div>
+            <div class="roadmap-body">
+              <div class="roadmap-title">Recipe Designer</div>
+              <div class="roadmap-desc">Visual crafting recipe editor for Bedrock addons with JSON export.</div>
+              <span class="roadmap-status status-planned">Planned</span>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-left"><div class="roadmap-dot"></div><div class="roadmap-line"></div></div>
+            <div class="roadmap-body">
+              <div class="roadmap-title">iOS Support</div>
+              <div class="roadmap-desc">Bring Bedrock Launcher functionality to iOS devices via Shortcuts or PWA.</div>
+              <span class="roadmap-status status-planned">Planned</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="page" id="gallery">
+      <div class="card">
+        <div class="section-header"><h2>🖼 Gallery</h2><div class="section-line"></div></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px">A showcase of tools and projects built by ImHungry1480.</p>
+        <div class="gallery-grid">
+          <a class="gallery-card gc-1" href="https://github.com/alamien060512-alt/MC-Bedrock-Launcher" target="_blank">
+            <div class="gallery-inner"><div class="gallery-icon">🚀</div><div class="gallery-name">Bedrock Launcher</div><div class="gallery-tag">Android App</div></div>
+            <div class="gallery-overlay"><span>View Project</span></div>
+          </a>
+          <a class="gallery-card gc-2" href="https://alamien060512-alt.github.io/BedrockAddonStudio/" target="_blank">
+            <div class="gallery-inner"><div class="gallery-icon">⚗️</div><div class="gallery-name">Addon Studio</div><div class="gallery-tag">Web Tool</div></div>
+            <div class="gallery-overlay"><span>Open Tool</span></div>
+          </a>
+          <a class="gallery-card gc-3" href="https://alamien060512-alt.github.io/Bedrock-World-Analyzer/" target="_blank">
+            <div class="gallery-inner"><div class="gallery-icon">🌍</div><div class="gallery-name">World Analyzer</div><div class="gallery-tag">Web Tool</div></div>
+            <div class="gallery-overlay"><span>Open Tool</span></div>
+          </a>
+          <div class="gallery-card" style="background:var(--surface);opacity:0.5;cursor:default">
+            <div class="gallery-inner"><div class="gallery-icon">🎨</div><div class="gallery-name">Skin Editor</div><div class="gallery-tag">Coming Soon</div></div>
+          </div>
+          <div class="gallery-card" style="background:var(--surface);opacity:0.5;cursor:default">
+            <div class="gallery-inner"><div class="gallery-icon">📋</div><div class="gallery-name">Recipe Designer</div><div class="gallery-tag">Coming Soon</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHANGELOG -->
+    <div class="page" id="changelog">
+      <div class="card">
+        <div class="section-header"><h2>📋 Changelog</h2><div class="section-line"></div></div>
+        <div class="changelog-list">
+          <div class="changelog-item" style="animation-delay:0.05s">
+            <div class="changelog-version">v1.3</div>
+            <div class="changelog-body">
+              <div class="changelog-title">World Analyzer — NBT Inspector</div>
+              <div class="changelog-desc">Added full NBT tree viewer, world seed display, and player position tracker. 40% faster parsing.</div>
+              <div class="changelog-tags"><span class="ctag ctag-new">NEW</span><span class="ctag ctag-update">UPDATE</span></div>
+              <div class="changelog-date">May 2025</div>
+            </div>
+          </div>
+          <div class="changelog-item" style="animation-delay:0.12s">
+            <div class="changelog-version">v1.2</div>
+            <div class="changelog-body">
+              <div class="changelog-title">Addon Studio — Behavior Pack Builder</div>
+              <div class="changelog-desc">Launched the behavior pack visual editor with entity definitions, item creation, and JSON export.</div>
+              <div class="changelog-tags"><span class="ctag ctag-add">ADD</span></div>
+              <div class="changelog-date">Apr 2025</div>
+            </div>
+          </div>
+          <div class="changelog-item" style="animation-delay:0.19s">
+            <div class="changelog-version">v1.1</div>
+            <div class="changelog-body">
+              <div class="changelog-title">Bedrock Launcher — Android Fix</div>
+              <div class="changelog-desc">Fixed addon import crash on Android 13+. Improved world export reliability.</div>
+              <div class="changelog-tags"><span class="ctag ctag-fix">FIX</span><span class="ctag ctag-update">UPDATE</span></div>
+              <div class="changelog-date">May 2025</div>
+            </div>
+          </div>
+          <div class="changelog-item" style="animation-delay:0.26s">
+            <div class="changelog-version">v1.0</div>
+            <div class="changelog-body">
+              <div class="changelog-title">Initial Launch 🎉</div>
+              <div class="changelog-desc">First release of ImHungry1480 Hub. Launched with Bedrock Launcher and Addon Studio.</div>
+              <div class="changelog-tags"><span class="ctag ctag-new">NEW</span></div>
+              <div class="changelog-date">Mar 2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="page" id="faq">
+      <div class="card">
+        <div class="section-header"><h2>❓ FAQ</h2><div class="section-line"></div></div>
+        <div class="faq-list">
+          <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Are all tools free to use? <span class="faq-icon">+</span></div><div class="faq-a">Yes! Every tool on this hub is completely free and open source. No accounts, no paywalls.</div></div>
+          <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Do tools work on iOS? <span class="faq-icon">+</span></div><div class="faq-a">The Bedrock Launcher targets Android only. Browser tools like Addon Studio and World Analyzer work on any device including iOS.</div></div>
+          <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Can I contribute to the projects? <span class="faq-icon">+</span></div><div class="faq-a">Absolutely! All projects are open-source on GitHub. Open issues, submit PRs, or suggest features.</div></div>
+          <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">What Minecraft Bedrock version is supported? <span class="faq-icon">+</span></div><div class="faq-a">Tools are designed for Bedrock 1.20+. Older versions may work but are not officially supported.</div></div>
+          <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">How do I report a bug? <span class="faq-icon">+</span></div><div class="faq-a">Open an issue on the relevant GitHub repo. Include your device, OS version, and steps to reproduce.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="page" id="contact">
+      <div class="card">
+        <div class="section-header"><h2>📬 Contact</h2><div class="section-line"></div></div>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.7">Have a question, bug report, or collaboration idea? Reach out through any of the channels below.</p>
+        <div class="contact-grid">
+          <a class="contact-item" href="https://github.com/alamien060512-alt" target="_blank">
+            <div class="contact-icon">🐙</div>
+            <div class="contact-label">GitHub</div>
+            <div class="contact-value">alamien060512-alt</div>
+            <div class="contact-note">Best for bug reports and contributions.</div>
+          </a>
+          <a class="contact-item" href="https://modrinth.com/user/al.amien060512" target="_blank">
+            <div class="contact-icon">🟩</div>
+            <div class="contact-label">Modrinth</div>
+            <div class="contact-value">al.amien060512</div>
+            <div class="contact-note">For mod-related questions and feedback.</div>
+          </a>
+        </div>
+        <div class="contact-form">
+          <div class="section-header" style="margin-top:22px">
+            <h2 style="font-size:16px">Send a Message</h2>
+            <div class="section-line"></div>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Your Name</label>
+            <input class="form-input" type="text" placeholder="Steve" id="cf-name">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Message</label>
+            <textarea class="form-textarea" placeholder="Hey, I found a bug in..." id="cf-msg"></textarea>
+          </div>
+          <button class="form-submit" onclick="submitContact()">Send Message ✉️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="page" id="about">
+      <div class="card">
+        <div class="section-header"><h2>👤 About Me</h2><div class="section-line"></div></div>
+        <p style="font-size:15px;line-height:1.8;color:var(--muted)">
+          Hi, I'm <strong style="color:var(--text)">ImHungry1480</strong>. I create Minecraft addons, mods, tools, and websites.
+          I enjoy building browser-based Minecraft tools and experimenting with addon systems.
+        </p>
+        <div class="about-grid">
+          <div class="about-item"><div class="about-item-title">Focus</div><p>Minecraft Bedrock Edition tools, addon development, and browser-based utilities.</p></div>
+          <div class="about-item"><div class="about-item-title">Stack</div><p>HTML, CSS, JavaScript, GitHub Pages, and Minecraft Bedrock addon APIs.</p></div>
+          <div class="about-item"><div class="about-item-title">Goal</div><p>Make Minecraft development accessible to everyone through free tools.</p></div>
+          <div class="about-item" ondblclick="triggerEgg('about')"><div class="about-item-title">Status</div><p>Actively building — more tools coming soon! 🔨</p></div>
+        </div>
+        <div class="skill-list">
+          <div class="section-header" style="margin-top:22px"><h2 style="font-size:16px">Skills</h2><div class="section-line"></div></div>
+          <div class="skill-row"><div class="skill-top"><span class="skill-name">JavaScript</span><span class="skill-pct">85%</span></div><div class="skill-bar"><div class="skill-fill" data-width="85"></div></div></div>
+          <div class="skill-row"><div class="skill-top"><span class="skill-name">HTML & CSS</span><span class="skill-pct">90%</span></div><div class="skill-bar"><div class="skill-fill" data-width="90"></div></div></div>
+          <div class="skill-row"><div class="skill-top"><span class="skill-name">Minecraft Bedrock Addons</span><span class="skill-pct">80%</span></div><div class="skill-bar"><div class="skill-fill" data-width="80"></div></div></div>
+          <div class="skill-row"><div class="skill-top"><span class="skill-name">JSON / NBT</span><span class="skill-pct">75%</span></div><div class="skill-bar"><div class="skill-fill" data-width="75"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOG -->
+    <div class="page" id="blog">
+      <div class="card" id="blog-list-view">
+        <div class="section-header"><h2>📝 Blog</h2><div class="section-line"></div></div>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.7">Thoughts, devlogs, and updates from the workshop. Click any post to read it.</p>
+        <div class="blog-list" id="blog-list"></div>
+      </div>
+      <div id="blog-post-view" style="display:none">
+        <button class="blog-back-btn" onclick="closeBlogPost()">← Back to Blog</button>
+        <div class="card">
+          <div class="blog-meta" id="bp-meta"></div>
+          <div class="blog-title" style="font-size:26px;margin-bottom:16px" id="bp-title"></div>
+          <div class="blog-full-body" id="bp-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="page" id="projects">
+      <div class="card">
+        <div class="section-header"><h2>🚀 Projects</h2><div class="section-line"></div></div>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.7">Everything I've built, am building, or plan to build.</p>
+        <div class="projects-grid">
+          <div class="project-card">
+            <div class="project-header"><div class="project-icon">🚀</div><span class="project-status ps-active">Active</span></div>
+            <div><div class="project-name">Bedrock Launcher</div><div class="project-desc">Android app to import/export Minecraft worlds and manage addons. No root required.</div></div>
+            <div class="project-lang"><span class="lang-tag">Java</span><span class="lang-tag">Android</span><span class="lang-tag">NBT</span></div>
+            <div class="project-links"><a class="project-link" href="https://github.com/alamien060512-alt/MC-Bedrock-Launcher" target="_blank">GitHub ↗</a></div>
+          </div>
+          <div class="project-card">
+            <div class="project-header"><div class="project-icon">⚗️</div><span class="project-status ps-active">Active</span></div>
+            <div><div class="project-name">Addon Studio</div><div class="project-desc">Browser-based behavior pack and resource pack editor with live JSON editing and export.</div></div>
+            <div class="project-lang"><span class="lang-tag">JavaScript</span><span class="lang-tag">HTML</span><span class="lang-tag">CSS</span></div>
+            <div class="project-links"><a class="project-link" href="https://alamien060512-alt.github.io/BedrockAddonStudio/" target="_blank">Live ↗</a></div>
+          </div>
+          <div class="project-card">
+            <div class="project-header"><div class="project-icon">🌍</div><span class="project-status ps-wip">In Progress</span></div>
+            <div><div class="project-name">World Analyzer</div><div class="project-desc">Inspect Bedrock world files in-browser. NBT viewer, seed reader, player position tracker.</div></div>
+            <div class="project-lang"><span class="lang-tag">JavaScript</span><span class="lang-tag">NBT</span></div>
+            <div class="project-links"><a class="project-link" href="https://alamien060512-alt.github.io/Bedrock-World-Analyzer/" target="_blank">Live ↗</a></div>
+          </div>
+          <div class="project-card">
+            <div class="project-header"><div class="project-icon">🎨</div><span class="project-status ps-planned">Planned</span></div>
+            <div><div class="project-name">Skin Editor</div><div class="project-desc">Browser-based Minecraft skin creator with live 3D preview, layer support, and one-click export.</div></div>
+            <div class="project-lang"><span class="lang-tag">JavaScript</span><span class="lang-tag">WebGL</span><span class="lang-tag">Three.js</span></div>
+            <div class="project-links"><span style="font-size:12px;color:var(--muted)">Coming soon…</span></div>
+          </div>
+          <div class="project-card">
+            <div class="project-header"><div class="project-icon">📋</div><span class="project-status ps-planned">Planned</span></div>
+            <div><div class="project-name">Recipe Designer</div><div class="project-desc">Visual crafting recipe editor for Bedrock addons with drag-and-drop grid and JSON export.</div></div>
+            <div class="project-lang"><span class="lang-tag">JavaScript</span><span class="lang-tag">JSON</span></div>
+            <div class="project-links"><span style="font-size:12px;color:var(--muted)">Coming soon…</span></div>
+          </div>
+          <div class="project-card" ondblclick="triggerEgg('projects')">
+            <div class="project-header"><div class="project-icon">❓</div><span class="project-status ps-planned">Mystery</span></div>
+            <div><div class="project-name">Project ???</div><div class="project-desc">Something big is cooking. Double-click this card if you're feeling adventurous… 👀</div></div>
+            <div class="project-lang"><span class="lang-tag">???</span></div>
+            <div class="project-links"><span style="font-size:12px;color:var(--muted)">Revealing soon</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUESTBOOK -->
+    <div class="page" id="guestbook">
+      <div class="card">
+        <div class="section-header"><h2>📖 Guestbook</h2><div class="section-line"></div></div>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.7">Leave a message! Say hi, drop feedback, or just let me know you were here.</p>
+        <div class="guestbook-entries" id="gb-entries"></div>
+        <div class="gb-form">
+          <div class="gb-form-title">✍️ Sign the Guestbook</div>
+          <div class="form-row">
+            <label class="form-label">Your Name</label>
+            <input class="form-input" type="text" id="gb-name" placeholder="Alex" maxlength="30">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Pick an Emoji</label>
+            <div class="emoji-row">
+              <button class="emoji-btn selected" onclick="selectEmoji(this,'👋')">👋</button>
+              <button class="emoji-btn" onclick="selectEmoji(this,'⛏️')">⛏️</button>
+              <button class="emoji-btn" onclick="selectEmoji(this,'💙')">💙</button>
+              <button class="emoji-btn" onclick="selectEmoji(this,'🔥')">🔥</button>
+              <button class="emoji-btn" onclick="selectEmoji(this,'🌟')">🌟</button>
+              <button class="emoji-btn" onclick="selectEmoji(this,'🤩')">🤩</button>
+              <button class="emoji-btn" onclick="selectEmoji(this,'🎮')">🎮</button>
+              <button class="emoji-btn" onclick="selectEmoji(this,'🧱')">🧱</button>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Message</label>
+            <textarea class="form-textarea" id="gb-msg" placeholder="Hey, love your work!" maxlength="200" oninput="updateCounter(this)"></textarea>
+            <div class="gb-counter" id="gb-counter">0 / 200</div>
+          </div>
+          <button class="form-submit" onclick="submitGuestbook()">Sign Guestbook ✍️</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Made with ♥ by <span>ImHungry1480</span> · <span id="footer-egg" onclick="triggerEgg('footer')" style="opacity:0.4;font-size:11px;cursor:pointer">🥚</span>
+      <div style="margin-top:8px;font-size:11px;opacity:0.4;line-height:1.6">
+        Not affiliated with Mojang or Microsoft. Minecraft and its content are property of Mojang Studios / Microsoft Corporation.
+      </div>
+    </footer>
+  </div>
+
+  <script>
+  /* LOADER */
+  function dismissLoader() {
+    const l = document.getElementById('loader');
+    if (l && !l.classList.contains('hidden')) {
+      l.classList.add('hidden');
+      startTyped();
+      animateCounters();
+    }
+  }
+  document.addEventListener('DOMContentLoaded', () => setTimeout(dismissLoader, 1200));
+  setTimeout(dismissLoader, 3000);
+
+  /* THEME */
+  let isDark = true;
+  function toggleTheme() {
+    isDark = !isDark;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    document.getElementById('theme-toggle').textContent = isDark ? '🌙' : '☀️';
+    showToast(isDark ? '🌙 Dark mode' : '☀️ Light mode');
+  }
+
+  /* TOAST */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  /* RIPPLE */
+  document.addEventListener('click', e => {
+    const r = document.createElement('div');
+    r.className = 'ripple';
+    r.style.cssText = `width:80px;height:80px;left:${e.clientX-40}px;top:${e.clientY-40}px`;
+    document.body.appendChild(r);
+    setTimeout(() => r.remove(), 700);
+  });
+
+  /* PARTICLES */
+  const pC = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const cols = ['var(--accent)','var(--accent2)','var(--accent3)'];
+    p.style.cssText = `left:${Math.random()*100}%;top:${40+Math.random()*60}%;background:${cols[Math.floor(Math.random()*3)]};width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;animation-duration:${6+Math.random()*10}s;animation-delay:${Math.random()*10}s`;
+    pC.appendChild(p);
+  }
+
+  /* TYPEWRITER */
+  const phrases = ['Crafting tools for the Minecraft community','Building browser-based Bedrock utilities','Making addon development accessible','Turning ideas into open-source tools'];
+  let pi=0,ci=0,del=false;
+  function startTyped(){ typeTick(); }
+  function typeTick() {
+    const el = document.getElementById('typed-text');
+    if (!el) return;
+    const ph = phrases[pi];
+    if (!del) { el.textContent = ph.slice(0,++ci); if(ci===ph.length){del=true;setTimeout(typeTick,2200);return;} }
+    else { el.textContent = ph.slice(0,--ci); if(ci===0){del=false;pi=(pi+1)%phrases.length;} }
+    setTimeout(typeTick, del?32:55);
+  }
+
+  /* COUNTERS */
+  function animateCounters() {
+    document.querySelectorAll('.stat-num[data-count]').forEach(el => {
+      const t = parseInt(el.dataset.count); let c = 0;
+      const s = () => { c++; el.textContent = c+'+'; if(c<t) setTimeout(s,120); };
+      s();
+    });
+  }
+
+  /* PAGE SWITCH */
+  function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    document.getElementById(id).classList.add('active-page');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    if (id === 'about') { setTimeout(() => { document.querySelectorAll('.skill-fill').forEach(b => b.style.width = b.dataset.width+'%'); }, 100); }
+    if (id === 'guestbook') gbRender();
+    if (id === 'blog') renderBlogList();
+  }
+
+  /* FAQ */
+  function toggleFaq(item) {
+    const was = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!was) item.classList.add('open');
+  }
+
+  /* CONTACT */
+  function submitContact() {
+    const name = document.getElementById('cf-name').value.trim();
+    const msg  = document.getElementById('cf-msg').value.trim();
+    if (!name||!msg) { showToast('⚠️ Please fill in both fields'); return; }
+    const subject = 'Message from ' + name + ' via ImHungry1480 Hub';
+    const body = 'Name: ' + name + '\n\nMessage:\n' + msg;
+    window.location.href = 'mailto:al.amien060512@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    document.getElementById('cf-name').value = '';
+    document.getElementById('cf-msg').value = '';
+    showToast('📧 Opening your email app to send!');
+  }
+
+  /* EASTER EGGS */
+  const eggs = {
+    konami:   { icon:'🎮', title:'Konami Code!',      text:'You entered the legendary cheat code. You clearly know your gaming history!', code:'KONAMI_MASTER' },
+    stats:    { icon:'📊', title:'Secret Stats!',      text:"You discovered the hidden double-click! There are more Easter eggs on this page...", code:'DOUBLE_CLICK_MASTER' },
+    about:    { icon:'🔨', title:'Builder Mode!',      text:'Found the hidden About section egg! Always building something new.', code:'KEEP_BUILDING' },
+    footer:   { icon:'🥚', title:'Egg Hunter!',        text:'You noticed the tiny egg in the footer! Sharp eyes.', code:'FOOTER_EXPLORER' },
+    logo:     { icon:'⛏',  title:'Miner!',             text:'You clicked the logo 5 times! A true Minecraft fan.', code:'CLICK_MINER_X5' },
+    blog:     { icon:'📝', title:'Blog Reader!',       text:'You double-clicked a blog post! A true lore hunter.', code:'LORE_HUNTER' },
+    projects: { icon:'❓', title:'Mystery Unlocked!',  text:"You found the secret project card. Something big IS coming. Watch this space. 👀", code:'PROJECT_OMEGA' },
+    fact:     { icon:'🤫', title:'Curious!',           text:"Fine, you got me. The first tool I ever built was a dirt house calculator. It never shipped.", code:'DIRT_HOUSE_GANG' },
+    guestbook:{ icon:'📖', title:'Social Butterfly!',  text:"You signed the guestbook! You're officially part of the crew.", code:'CREW_MEMBER' },
+    darkmode: { icon:'🌑', title:'Night Owl!',         text:"You've been browsing in dark mode. Certified night owl detected.", code:'NIGHT_OWL_MODE' },
+    idle:     { icon:'💤', title:'Gone AFK?',          text:'You left the page idle too long... the Creeper saw you.', code:'CREEPER_SAW_YOU' },
+  };
+  let eggFound = {};
+  function triggerEgg(key) {
+    if (eggFound[key]) return;
+    eggFound[key] = true;
+    const e = eggs[key];
+    document.getElementById('egg-icon').textContent = e.icon;
+    document.getElementById('egg-title').textContent = e.title;
+    document.getElementById('egg-text').textContent = e.text;
+    document.getElementById('egg-code').textContent = e.code;
+    document.getElementById('egg-modal').classList.add('show');
+    showToast('🥚 Easter egg found!');
+  }
+  function closeEgg() { document.getElementById('egg-modal').classList.remove('show'); }
+  document.getElementById('egg-modal').addEventListener('click', e => { if(e.target===document.getElementById('egg-modal')) closeEgg(); });
+
+  /* LOGO CLICKS */
+  let logoClicks = 0;
+  document.querySelector('.avatar-ring').addEventListener('click', () => { logoClicks++; if(logoClicks>=5) triggerEgg('logo'); });
+
+  /* KONAMI */
+  const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let ki = 0;
+  document.addEventListener('keydown', e => {
+    if (e.key===konami[ki]) { ki++; updateKonamiUI(); if(ki===konami.length){ triggerEgg('konami'); ki=0; updateKonamiUI(); } }
+    else { ki=0; updateKonamiUI(); }
+  });
+  function updateKonamiUI() {
+    const symbols = ['↑','↑','↓','↓','←','→','←','→','B','A'];
+    const prog = document.getElementById('konami-progress');
+    if (!prog) return;
+    prog.innerHTML = symbols.map((s,i) => `<div class="kp${i<ki?' lit':''}">${s}</div>`).join('');
+  }
+  setTimeout(() => {
+    const p = document.createElement('div');
+    p.id = 'konami-progress';
+    p.style.cssText = 'display:flex;gap:6px;justify-content:center;margin-top:4px;flex-wrap:wrap';
+    document.querySelector('#home > div:last-child')?.after(p);
+  }, 2000);
+
+  /* GUESTBOOK — localStorage */
+  const GB_KEY = 'imhungry1480_guestbook_v1';
+  function gbLoad() {
+    try { return JSON.parse(localStorage.getItem(GB_KEY)) || []; }
+    catch(e) { return []; }
+  }
+  function gbSave(entries) {
+    try { localStorage.setItem(GB_KEY, JSON.stringify(entries)); } catch(e){}
+  }
+  function gbTimeAgo(ts) {
+    const s = Math.floor((Date.now()-ts)/1000);
+    if(s<60) return 'Just now';
+    if(s<3600) return Math.floor(s/60)+'m ago';
+    if(s<86400) return Math.floor(s/3600)+'h ago';
+    if(s<604800) return Math.floor(s/86400)+'d ago';
+    return Math.floor(s/604800)+'w ago';
+  }
+  function gbRender() {
+    const entries = gbLoad();
+    const list = document.getElementById('gb-entries');
+    list.innerHTML = '';
+    if (!entries.length) {
+      list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px;font-size:13px">No entries yet — be the first! 👋</div>';
+      return;
+    }
+    entries.forEach((e, i) => {
+      const div = document.createElement('div');
+      div.className = 'gb-entry';
+      div.style.animationDelay = (i*0.05)+'s';
+      div.innerHTML = `<div class="gb-header"><span class="gb-name">${e.name}</span><span class="gb-time">${gbTimeAgo(e.ts)}</span></div><div class="gb-msg"><span class="gb-emoji">${e.emoji}</span>${e.msg}</div>`;
+      list.appendChild(div);
+    });
+  }
+  let selectedEmoji = '👋';
+  function selectEmoji(btn, emoji) {
+    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedEmoji = emoji;
+  }
+  function updateCounter(el) {
+    document.getElementById('gb-counter').textContent = el.value.length + ' / 200';
+  }
+  function submitGuestbook() {
+    const name = document.getElementById('gb-name').value.trim();
+    const msg  = document.getElementById('gb-msg').value.trim();
+    if (!name||!msg) { showToast('⚠️ Fill in your name and message'); return; }
+    const entries = gbLoad();
+    entries.unshift({ name:'🔵 '+name, emoji:selectedEmoji, msg, ts:Date.now() });
+    gbSave(entries);
+    gbRender();
+    document.getElementById('gb-name').value = '';
+    document.getElementById('gb-msg').value = '';
+    document.getElementById('gb-counter').textContent = '0 / 200';
+    showToast('✍️ Signed and saved!');
+    if (entries.length >= 3) triggerEgg('guestbook');
+  }
+
+  /* BLOG */
+  const BLOG_POSTS = [
+    {
+      id:1, date:'May 2025', tag:'Devlog',
+      title:"World Analyzer v1.3 — What's New",
+      excerpt:"The latest update brings a full NBT tree viewer, world seed display, and player position tracker. Parsing is now 40% faster.",
+      eggTarget:'blog',
+      body:`<p>World Analyzer v1.3 is the biggest update yet. Here is everything that landed.</p>
+        <h3>🌳 NBT Tree Viewer</h3>
+        <p>You can now inspect every NBT tag in your world file — compounds, lists, primitives. Click any node to expand it. It renders the full tree structure live in-browser, with no uploads to any server. Your world data stays on your device.</p>
+        <h3>🌱 World Seed Display</h3>
+        <p>The seed is extracted directly from the <code>level.dat</code> file. No guessing — it reads the exact seed Bedrock stored when the world was created.</p>
+        <h3>📍 Player Position Tracker</h3>
+        <p>Opens the <code>player.dat</code> entry and reads the XYZ coordinates. Great for recovering your location after a death with no bed set.</p>
+        <h3>⚡ 40% Faster Parsing</h3>
+        <p>The chunk reader was rewritten from scratch using a single shared buffer. Stack overflows on deep NBT trees are now gone.</p>
+        <ul><li>Rewritten binary reader using <code>DataView</code></li><li>Lazy loading — only parses chunks you open</li><li>Memory usage down ~60% on large worlds</li></ul>
+        <p>Next up: write support. Editing NBT values and re-exporting is the big goal for v2.0.</p>`
+    },
+    {
+      id:2, date:'May 2025', tag:'Announcement',
+      title:'ImHungry1480 Hub Is Live 🎉',
+      excerpt:"After weeks of building in secret, the hub is finally public. Here is what it is and what is coming.",
+      body:`<p>After a few weeks of building quietly, the hub is live. This is the central place for everything I make — tools, projects, updates, and whatever else I feel like writing about.</p>
+        <h3>🚀 What Is Here Now</h3>
+        <p><strong>Bedrock Launcher</strong> — the Android app that started it all. Import/export worlds, manage addons without root.</p>
+        <p><strong>Addon Studio</strong> — a browser-based behavior pack and resource pack editor. Open it on any device, no install required.</p>
+        <h3>🔮 What Is Coming</h3>
+        <ul><li>World Analyzer — inspect your world NBT data in-browser</li><li>Skin Editor — a 3D skin creator that runs in the browser</li><li>Recipe Designer — drag-and-drop crafting recipe editor</li></ul>
+        <p>More tools are already in progress. Bookmark the hub and check back.</p>`
+    }
+  ];
+  function renderBlogList() {
+    const list = document.getElementById('blog-list');
+    if (!list) return;
+    list.innerHTML = '';
+    BLOG_POSTS.forEach((post, i) => {
+      const div = document.createElement('div');
+      div.className = 'blog-post';
+      div.style.animationDelay = (i*0.07)+'s';
+      if (post.eggTarget) div.ondblclick = () => triggerEgg(post.eggTarget);
+      div.innerHTML = `<div class="blog-meta"><span class="blog-date">${post.date}</span><span class="blog-tag">${post.tag}</span></div><div class="blog-title">${post.title}</div><div class="blog-excerpt">${post.excerpt}</div><span class="blog-readmore">Read post →</span>`;
+      div.addEventListener('click', () => openBlogPost(post));
+      list.appendChild(div);
+    });
+  }
+  function openBlogPost(post) {
+    document.getElementById('blog-list-view').style.display = 'none';
+    document.getElementById('blog-post-view').style.display = 'block';
+    document.getElementById('bp-meta').innerHTML = `<span class="blog-date">${post.date}</span><span class="blog-tag" style="margin-left:8px">${post.tag}</span>`;
+    document.getElementById('bp-title').textContent = post.title;
+    document.getElementById('bp-body').innerHTML = post.body;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function closeBlogPost() {
+    document.getElementById('blog-post-view').style.display = 'none';
+    document.getElementById('blog-list-view').style.display = 'block';
+  }
+
+  /* IDLE EGG */
+  let idleTimer;
+  function resetIdle(){ clearTimeout(idleTimer); idleTimer = setTimeout(()=>triggerEgg('idle'),45000); }
+  ['mousemove','keydown','click','scroll'].forEach(e => document.addEventListener(e, resetIdle));
+  resetIdle();
+
+  /* DARK MODE EGG */
+  setTimeout(()=>{ if(isDark) triggerEgg('darkmode'); }, 32000);
+  </script>
+</body>
+</html>
