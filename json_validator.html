@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ImHungry's JSON Validator </title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:900px;
+    background:#111827;
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 0 30px rgba(0,0,0,.4);
+}
+
+h1{
+    text-align:center;
+    color:white;
+    margin-bottom:20px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#94a3b8;
+    margin-bottom:25px;
+}
+
+textarea{
+    width:100%;
+    height:300px;
+    background:#0f172a;
+    border:2px solid #334155;
+    border-radius:12px;
+    color:white;
+    padding:15px;
+    resize:none;
+    font-size:15px;
+    outline:none;
+}
+
+textarea:focus{
+    border-color:#3b82f6;
+}
+
+.buttons{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+button{
+    flex:1;
+    border:none;
+    border-radius:10px;
+    padding:14px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:bold;
+}
+
+.validate{
+    background:#2563eb;
+    color:white;
+}
+
+.clear{
+    background:#374151;
+    color:white;
+}
+
+.result{
+    margin-top:20px;
+    border-radius:12px;
+    padding:15px;
+    display:none;
+}
+
+.valid{
+    display:block;
+    background:rgba(34,197,94,.15);
+    border:1px solid #22c55e;
+    color:#4ade80;
+}
+
+.invalid{
+    display:block;
+    background:rgba(239,68,68,.15);
+    border:1px solid #ef4444;
+    color:#f87171;
+}
+
+.output{
+    margin-top:15px;
+    background:#020617;
+    border-radius:12px;
+    padding:15px;
+    color:#e2e8f0;
+    white-space:pre-wrap;
+    overflow:auto;
+    max-height:300px;
+    display:none;
+}
+
+.footer{
+    text-align:center;
+    color:#64748b;
+    margin-top:20px;
+    font-size:13px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>📄 ImHungry's JSON Validator </h1>
+<p class="subtitle">Validate and format JSON instantly</p>
+
+<textarea id="jsonInput" placeholder='Paste JSON here...'></textarea>
+
+<div class="buttons">
+    <button class="validate" onclick="validateJSON()">Validate JSON</button>
+    <button class="clear" onclick="clearAll()">Clear</button>
+</div>
+
+<div id="result" class="result"></div>
+<div id="output" class="output"></div>
+
+<div class="footer">
+    Pure HTML • CSS • JS Validator
+</div>
+
+</div>
+
+<script>
+function validateJSON() {
+    const input = document.getElementById("jsonInput").value;
+    const result = document.getElementById("result");
+    const output = document.getElementById("output");
+
+    try {
+        const parsed = JSON.parse(input);
+
+        result.style.display = "block";
+        result.className = "result valid";
+        result.innerHTML = "✅ JSON is valid";
+
+        output.style.display = "block";
+        output.textContent = JSON.stringify(parsed, null, 4);
+
+    } catch (err) {
+
+        result.style.display = "block";
+        result.className = "result invalid";
+        result.innerHTML = "❌ Invalid JSON<br><br>" + err.message;
+
+        output.style.display = "none";
+    }
+}
+
+function clearAll() {
+    document.getElementById("jsonInput").value = "";
+
+    const result = document.getElementById("result");
+    const output = document.getElementById("output");
+
+    result.style.display = "none";
+    result.className = "result";
+    result.innerHTML = "";
+
+    output.style.display = "none";
+    output.textContent = "";
+}
+</script>
+
+</body>
+</html>
