@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="favicon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ImHungrys UUID Generator</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#0f172a;
+    color:white;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    background:#1e293b;
+    padding:20px;
+    border-radius:15px;
+}
+
+h1,h2{
+    text-align:center;
+}
+
+.controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+input,button{
+    padding:10px;
+    border:none;
+    border-radius:8px;
+}
+
+input{
+    background:#334155;
+    color:white;
+}
+
+button{
+    cursor:pointer;
+    color:white;
+}
+
+.generate{background:#2563eb;}
+.selectall{background:#16a34a;}
+.clear{background:#dc2626;}
+
+.uuid-box{
+    width:100%;
+    margin-top:8px;
+    padding:10px;
+    background:#334155;
+    color:white;
+    border:none;
+    border-radius:8px;
+}
+
+.uuid-box:focus{
+    outline:2px solid #60a5fa;
+}
+
+.valid{
+    color:#22c55e;
+}
+
+.invalid{
+    color:#ef4444;
+}
+
+small{
+    color:#cbd5e1;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🚀 ImHungry's UUID Generator</h1>
+
+<div class="controls">
+    <input id="count" type="number" value="10" min="1" max="100">
+    <button class="generate" onclick="generateUUIDs()">Generate</button>
+    <button class="selectall" onclick="selectAllUUIDs()">Select All</button>
+    <button class="clear" onclick="clearGenerated()">Clear</button>
+</div>
+
+<p>
+UUIDs Generated:
+<span id="uuidCount">0</span>
+</p>
+
+<div id="uuidList"></div>
+
+<hr>
+
+<h2>UUID Validator</h2>
+
+<input
+id="validatorInput"
+type="text"
+placeholder="Paste UUID here"
+style="width:100%;"
+>
+
+<br><br>
+
+<button class="generate" onclick="validateUUID()">
+Validate
+</button>
+
+<p id="validationResult"></p>
+
+<hr>
+
+<h2>History</h2>
+
+<button class="clear" onclick="clearHistory()">
+Clear History
+</button>
+
+<div id="history"></div>
+
+</div>
+
+<script>
+
+const historyKey = "uuid_history";
+
+function generateUUIDs(){
+
+    const count = Math.min(
+        Math.max(
+            parseInt(document.getElementById("count").value)||1,
+            1
+        ),
+        100
+    );
+
+    const uuidList =
+        document.getElementById("uuidList");
+
+    uuidList.innerHTML = "";
+
+    let history =
+        JSON.parse(
+            localStorage.getItem(historyKey)||"[]"
+        );
+
+    for(let i=0;i<count;i++){
+
+        const uuid = crypto.randomUUID();
+
+        const input =
+            document.createElement("input");
+
+        input.type = "text";
+        input.value = uuid;
+        input.readOnly = true;
+        input.className = "uuid-box";
+
+        input.onclick = function(){
+            this.select();
+        };
+
+        uuidList.appendChild(input);
+
+        history.unshift({
+            uuid:uuid,
+            time:new Date().toLocaleString()
+        });
+    }
+
+    localStorage.setItem(
+        historyKey,
+        JSON.stringify(history.slice(0,500))
+    );
+
+    document.getElementById("uuidCount")
+        .textContent = count;
+
+    loadHistory();
+}
+
+function selectAllUUIDs(){
+
+    const uuids =
+        [...document.querySelectorAll(".uuid-box")]
+        .map(e=>e.value)
+        .join("\n");
+
+    if(!uuids){
+        alert("Generate UUIDs first.");
+        return;
+    }
+
+    const area =
+        document.createElement("textarea");
+
+    area.value = uuids;
+
+    document.body.appendChild(area);
+
+    area.select();
+
+    alert(
+        "All UUIDs selected.\nPress Ctrl+C (or Copy on mobile)."
+    );
+}
+
+function clearGenerated(){
+
+    document.getElementById("uuidList")
+        .innerHTML = "";
+
+    document.getElementById("uuidCount")
+        .textContent = "0";
+}
+
+function validateUUID(){
+
+    const uuid =
+        document.getElementById("validatorInput")
+        .value
+        .trim();
+
+    const regex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+    const result =
+        document.getElementById("validationResult");
+
+    if(regex.test(uuid)){
+        result.className = "valid";
+        result.textContent = "✅ Valid UUID";
+    }else{
+        result.className = "invalid";
+        result.textContent = "❌ Invalid UUID";
+    }
+}
+
+function loadHistory(){
+
+    const historyDiv =
+        document.getElementById("history");
+
+    const history =
+        JSON.parse(
+            localStorage.getItem(historyKey)||"[]"
+        );
+
+    historyDiv.innerHTML = "";
+
+    if(history.length===0){
+        historyDiv.innerHTML =
+            "<p>No history.</p>";
+        return;
+    }
+
+    history.forEach(item=>{
+
+        const input =
+            document.createElement("input");
+
+        input.type = "text";
+        input.value =
+            item.uuid +
+            " | " +
+            item.time;
+
+        input.readOnly = true;
+
+        input.className = "uuid-box";
+
+        input.onclick = function(){
+            this.select();
+        };
+
+        historyDiv.appendChild(input);
+    });
+}
+
+function clearHistory(){
+
+    if(confirm("Delete history?")){
+
+        localStorage.removeItem(historyKey);
+
+        loadHistory();
+    }
+}
+
+loadHistory();
+
+</script>
+
+</body>
+</html>
